@@ -624,28 +624,40 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
                    boolean evict) {
         Node<K,V>[] tab; Node<K,V> p; int n, i;
-        if ((tab = table) == null || (n = tab.length) == 0)
+        if ((tab = table) == null || (n = tab.length) == 0) { //1. 如果还没有初始化先初始化HashMap
             n = (tab = resize()).length;
-        if ((p = tab[i = (n - 1) & hash]) == null)
+        }
+
+        //2. 根据(n-1) & hash 来计算出地址索引, 等价于hash % n。
+        //如果根据hash计算出指定索引没有元素，那么就把这个元素放到这个位置.
+        if ((p = tab[i = (n - 1) & hash]) == null) {
             tab[i] = newNode(hash, key, value, null);
-        else {
+        } else {
+            //3.如果根据hash计算出索引已经有元素，那么就说明两种情况：
+            //a. put的key是同一个，那么直接覆盖。
+            //b. 不同的key计算出同一个所以，那么就是hash碰撞。
             Node<K,V> e; K k;
             if (p.hash == hash &&
-                ((k = p.key) == key || (key != null && key.equals(k))))
+                ((k = p.key) == key || (key != null && key.equals(k)))) {
+                //4. 同一个key多次put，那么直接覆盖。
                 e = p;
-            else if (p instanceof TreeNode)
+            } else if (p instanceof TreeNode) {
+                //5. 如果已经是TreeNode了，那么直接往Tree里面继续添加节点。
+                //
                 e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
-            else {
+            } else {
                 for (int binCount = 0; ; ++binCount) {
                     if ((e = p.next) == null) {
                         p.next = newNode(hash, key, value, null);
-                        if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
+                        if (binCount >= TREEIFY_THRESHOLD - 1) {// -1 for 1st
                             treeifyBin(tab, hash);
+                        }
                         break;
                     }
                     if (e.hash == hash &&
-                        ((k = e.key) == key || (key != null && key.equals(k))))
+                        ((k = e.key) == key || (key != null && key.equals(k)))) {
                         break;
+                    }
                     p = e;
                 }
             }
@@ -658,8 +670,9 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             }
         }
         ++modCount;
-        if (++size > threshold)
+        if (++size > threshold) {
             resize();
+        }
         afterNodeInsertion(evict);
         return null;
     }
@@ -682,14 +695,14 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             if (oldCap >= MAXIMUM_CAPACITY) {
                 threshold = Integer.MAX_VALUE;
                 return oldTab;
-            }
-            else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY &&
-                     oldCap >= DEFAULT_INITIAL_CAPACITY)
+            } else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY &&
+                     oldCap >= DEFAULT_INITIAL_CAPACITY) {
                 newThr = oldThr << 1; // double threshold
+            }
         }
-        else if (oldThr > 0) // initial capacity was placed in threshold
+        else if (oldThr > 0) {// initial capacity was placed in threshold
             newCap = oldThr;
-        else {               // zero initial threshold signifies using defaults
+        } else {               // zero initial threshold signifies using defaults
             newCap = DEFAULT_INITIAL_CAPACITY;
             newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);
         }
@@ -2023,13 +2036,13 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             TreeNode<K,V> root = (parent != null) ? root() : this;
             for (TreeNode<K,V> p = root;;) {
                 int dir, ph; K pk;
-                if ((ph = p.hash) > h)
+                if ((ph = p.hash) > h) {
                     dir = -1;
-                else if (ph < h)
+                } else if (ph < h) {
                     dir = 1;
-                else if ((pk = p.key) == k || (k != null && k.equals(pk)))
+                } else if ((pk = p.key) == k || (k != null && k.equals(pk))) {
                     return p;
-                else if ((kc == null &&
+                } else if ((kc == null &&
                           (kc = comparableClassFor(k)) == null) ||
                          (dir = compareComparables(kc, k, pk)) == 0) {
                     if (!searched) {
@@ -2054,8 +2067,9 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                         xp.right = x;
                     xp.next = x;
                     x.parent = x.prev = xp;
-                    if (xpn != null)
+                    if (xpn != null) {
                         ((TreeNode<K,V>)xpn).prev = x;
+                    }
                     moveRootToFront(tab, balanceInsertion(root, x));
                     return null;
                 }

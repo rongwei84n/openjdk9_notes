@@ -6,3 +6,4 @@ webrev
 .bridge2
 *.DS_Store
 nbproject
+.idea/
