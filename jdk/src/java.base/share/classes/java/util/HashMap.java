@@ -49,7 +49,7 @@ import java.util.function.Function;
  * disperses the elements properly among the buckets.  Iteration over
  * collection views requires time proportional to the "capacity" of the
  * {@code HashMap} instance (the number of buckets) plus its size (the number
- * of key-value mappings).  Thus, it's very important not to set the initial
+ * of key-value mappings).  Thus, it's very important not to set the initial 
  * capacity too high (or the load factor too low) if iteration performance is
  * important.
  *
@@ -624,26 +624,25 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
                    boolean evict) {
         Node<K,V>[] tab; Node<K,V> p; int n, i;
-        if ((tab = table) == null || (n = tab.length) == 0) { //1. 如果还没有初始化先初始化HashMap
+        if ((tab = table) == null || (n = tab.length) == 0) { //1. HashMap has not init yet
             n = (tab = resize()).length;
         }
 
-        //2. 根据(n-1) & hash 来计算出地址索引, 等价于hash % n。
-        //如果根据hash计算出指定索引没有元素，那么就把这个元素放到这个位置.
+        //2. (n-1) & hash equals hash % n, but has better perference
+        //if no value at point position, then put it here.
         if ((p = tab[i = (n - 1) & hash]) == null) {
             tab[i] = newNode(hash, key, value, null);
         } else {
-            //3.如果根据hash计算出索引已经有元素，那么就说明两种情况：
-            //a. put的key是同一个，那么直接覆盖。
-            //b. 不同的key计算出同一个所以，那么就是hash碰撞。
+            //3. if there is a value already, maybe has two chances:
+            //a. same key, replease.
+            //b. different key, hash collision!!!
             Node<K,V> e; K k;
             if (p.hash == hash &&
                 ((k = p.key) == key || (key != null && key.equals(k)))) {
-                //4. 同一个key多次put，那么直接覆盖。
+                //4. same key, replease.
                 e = p;
             } else if (p instanceof TreeNode) {
-                //5. 如果已经是TreeNode了，那么直接往Tree里面继续添加节点。
-                //
+                //5. It's a TreeNode already, add value to Tree.
                 e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
             } else {
                 for (int binCount = 0; ; ++binCount) {
