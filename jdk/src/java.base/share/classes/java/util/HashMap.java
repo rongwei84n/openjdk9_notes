@@ -645,10 +645,12 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                 //5. It's a TreeNode already, add value to Tree.
                 e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
             } else {
+                //6. collision-> add value into linked list
                 for (int binCount = 0; ; ++binCount) {
                     if ((e = p.next) == null) {
                         p.next = newNode(hash, key, value, null);
                         if (binCount >= TREEIFY_THRESHOLD - 1) {// -1 for 1st
+                            //7.If list size > threshold(8), change to tree.
                             treeifyBin(tab, hash);
                         }
                         break;
@@ -668,7 +670,9 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                 return oldValue;
             }
         }
+        //8. used as fast failed, multi thread access hashmap or list map when add/delete map.
         ++modCount;
+        //9. add size
         if (++size > threshold) {
             resize();
         }
