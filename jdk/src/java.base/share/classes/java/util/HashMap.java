@@ -335,6 +335,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      */
     static final int hash(Object key) {
         int h;
+        //@@ use h>>>16 maybe because the author don't beleave that key'hashCode has right value.
+        //maybe some guy's hashcode is always similar.
         return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
     }
 
@@ -624,33 +626,33 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
                    boolean evict) {
         Node<K,V>[] tab; Node<K,V> p; int n, i;
-        if ((tab = table) == null || (n = tab.length) == 0) { //1. HashMap has not init yet
+        if ((tab = table) == null || (n = tab.length) == 0) { //@@ 1. HashMap has not init yet
             n = (tab = resize()).length;
         }
 
-        //2. (n-1) & hash equals hash % n, but has better perference
+        //@@ 2. (n-1) & hash equals hash % n, but has better perference
         //if no value at point position, then put it here.
         if ((p = tab[i = (n - 1) & hash]) == null) {
             tab[i] = newNode(hash, key, value, null);
         } else {
-            //3. if there is a value already, maybe has two chances:
+            //@@ 3. if there is a value already, maybe has two chances:
             //a. same key, replease.
             //b. different key, hash collision!!!
             Node<K,V> e; K k;
             if (p.hash == hash &&
                 ((k = p.key) == key || (key != null && key.equals(k)))) {
-                //4. same key, replease.
+                //@@ 4. same key, replease.
                 e = p;
             } else if (p instanceof TreeNode) {
-                //5. It's a TreeNode already, add value to Tree.
+                //@@ 5. It's a TreeNode already, add value to Tree.
                 e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
             } else {
-                //6. collision-> add value into linked list
+                //@@ 6. collision-> add value into linked list
                 for (int binCount = 0; ; ++binCount) {
                     if ((e = p.next) == null) {
                         p.next = newNode(hash, key, value, null);
                         if (binCount >= TREEIFY_THRESHOLD - 1) {// -1 for 1st
-                            //7.If list size > threshold(8), change to tree.
+                            //@@ 7.If list size > threshold(8), change to tree.
                             treeifyBin(tab, hash);
                         }
                         break;
@@ -662,7 +664,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                     p = e;
                 }
             }
-            if (e != null) { // existing mapping for key
+            if (e != null) { // @@ existing mapping for key
                 V oldValue = e.value;
                 if (!onlyIfAbsent || oldValue == null)
                     e.value = value;
@@ -670,9 +672,9 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                 return oldValue;
             }
         }
-        //8. used as fast failed, multi thread access hashmap or list map when add/delete map.
+        //@@ 8. used as fast failed, multi thread access hashmap or list map when add/delete map.
         ++modCount;
-        //9. add size
+        //@@ 9. add size
         if (++size > threshold) {
             resize();
         }
