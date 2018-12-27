@@ -7,3 +7,4 @@ webrev
 *.DS_Store
 nbproject
 .idea/
+*.class
