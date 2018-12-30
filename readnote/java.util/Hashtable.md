@@ -473,6 +473,16 @@ Hashtable
 
 
 
+**其实Hashtable的注释也提到了这一点，如果非线程安全推荐使用Hashmap，如果有线程安全的要求，那么推荐使用ConcurrentHashmap，注释如下:**
+
+
+
+```
+As of the Java 2 platform v1.2, this class was retrofitted to implement the Map interface, making it a member of the Java Collections Framework. Unlike the new collection implementations, Hashtable is synchronized. If a thread-safe implementation is not needed, it is recommended to use HashMap in place of Hashtable. If a thread-safe highly-concurrent implementation is desired, then it is recommended to use java.util.concurrent.ConcurrentHashMap in place of Hashtable.
+```
+
+
+
 
 
 
