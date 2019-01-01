@@ -89,12 +89,12 @@ public class LinkedList<E>
     /**
      * Pointer to first node.
      */
-    transient Node<E> first;
+    transient Node<E> first; //指向第一个元素
 
     /**
      * Pointer to last node.
      */
-    transient Node<E> last;
+    transient Node<E> last; //指向最后一个元素，避免过多的遍历链表
 
     /*
     void dataStructureInvariants() {
@@ -142,7 +142,7 @@ public class LinkedList<E>
      * Links e as last element.
      */
     void linkLast(E e) {
-        final Node<E> l = last;
+        final Node<E> l = last; //last指向最后一个元素，优化，避免遍历链表
         final Node<E> newNode = new Node<>(l, e, null);
         last = newNode;
         if (l == null)
